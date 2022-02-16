@@ -1,6 +1,8 @@
 import socket, time
 
 host = socket.gethostbyname(socket.gethostname())
+print(host)
+
 port = 9090
 
 clients = []

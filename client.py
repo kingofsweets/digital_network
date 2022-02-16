@@ -1,24 +1,69 @@
-import time, socket, sys
+import socket, threading, time
 
-socket_server = socket.socket()
-server_host = socket.gethostname()
-ip = socket.gethostbyname(server_host)
-sport = 8080
+key = 8194
 
-print('This is your IP address: ',ip)
-server_host = input('Enter friend\'s IP address:')
-name = input('Enter Friend\'s name: ')
+shutdown = False
+join = False
 
+def receving (name, sock):
+	while not shutdown:
+		try:
+			while True:
+				data, addr = sock.recvfrom(1024)
+				#print(data.decode("utf-8"))
 
-socket_server.connect((server_host, sport))
+				# Begin
+				decrypt = ""; k = False
+				for i in data.decode("utf-8"):
+					if i == ":":
+						k = True
+						decrypt += i
+					elif k == False or i == " ":
+						decrypt += i
+					else:
+						decrypt += chr(ord(i)^key)
+				print(decrypt)
+				# End
 
-socket_server.send(name.encode())
-server_name = socket_server.recv(1024)
-server_name = server_name.decode()
+				time.sleep(0.2)
+		except:
+			pass
+host = socket.gethostbyname(socket.gethostname())
+port = 0
 
-print(server_name,' has joined...')
-while True:
-    message = (socket_server.recv(1024)).decode()
-    print(server_name, ":", message)
-    message = input("Me : ")
-    socket_server.send(message.encode())  
+server = ("178.155.4.164",9090)
+
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind((host,port))
+s.setblocking(0)
+
+alias = input("Name: ")
+
+rT = threading.Thread(target = receving, args = ("RecvThread",s))
+rT.start()
+
+while shutdown == False:
+	if join == False:
+		s.sendto(("["+alias + "] => join chat ").encode("utf-8"),server)
+		join = True
+	else:
+		try:
+			message = input()
+
+			# Begin
+			crypt = ""
+			for i in message:
+				crypt += chr(ord(i)^key)
+			message = crypt
+			# End
+
+			if message != "":
+				s.sendto(("["+alias + "] :: "+message).encode("utf-8"),server)
+			
+			time.sleep(0.2)
+		except:
+			s.sendto(("["+alias + "] <= left chat ").encode("utf-8"),server)
+			shutdown = True
+
+rT.join()
+s.close()
