@@ -2,9 +2,10 @@ import socket
 from threading import Thread
 
 # server's IP address
-SERVER_HOST = "188.166.162.193"
+SERVER_HOST = socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 5002 # port we want to use
 separator_token = "<SEP>" # we will use this to separate the client name & message
+print(SERVER_HOST)
 
 # initialize list/set of all connected client's sockets
 client_sockets = set()
