@@ -1,14 +1,33 @@
-import socket
-sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-sock.bind (('178.155.4.164',5050))
-client = [] # Массив где храним адреса клиентов
-print ('Start Server')
-while 1 :
-         data , addres = sock.recvfrom(1024)
-         print (addres[0], addres[1])
-         if  addres not in client : 
-                 client.append(addres)# Если такого клиента нету , то добавить
-         for clients in client :
-                 if clients == addres : 
-                     continue # Не отправлять данные клиенту, который их прислал
-                 sock.sendto(data,clients)
+import socket, time
+
+host = socket.gethostbyname(socket.gethostname())
+port = 9090
+
+clients = []
+
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind((host,port))
+
+quit = False
+print("[ Server Started ]")
+
+while not quit:
+	try:
+		data, addr = s.recvfrom(1024)
+
+		if addr not in clients:
+			clients.append(addr)
+
+		itsatime = time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
+
+		print("["+addr[0]+"]=["+str(addr[1])+"]=["+itsatime+"]/",end="")
+		print(data.decode("utf-8"))
+
+		for client in clients:
+			if addr != client:
+				s.sendto(data,client)
+	except:	
+		print("\n[ Server Stopped ]")
+		quit = True
+		
+s.close()
