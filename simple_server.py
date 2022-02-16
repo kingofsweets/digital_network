@@ -1,61 +1,33 @@
-import socket
-from threading import Thread
+import socket, time
 
-# server's IP address
-SERVER_HOST = socket.gethostbyname(socket.gethostname())
-SERVER_PORT = 5002 # port we want to use
-separator_token = "<SEP>" # we will use this to separate the client name & message
-print(SERVER_HOST)
+host = socket.gethostbyname(socket.gethostname())
+port = 9090
 
-# initialize list/set of all connected client's sockets
-client_sockets = set()
-# create a TCP socket
-s = socket.socket()
-# make the port as reusable port
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-# bind the socket to the address we specified
-s.bind((SERVER_HOST, SERVER_PORT))
-# listen for upcoming connections
-s.listen(5)
-print(f"[*] Listening as {SERVER_HOST}:{SERVER_PORT}")
+clients = []
 
-def listen_for_client(cs):
-    """
-    This function keep listening for a message from `cs` socket
-    Whenever a message is received, broadcast it to all other connected clients
-    """
-    while True:
-        try:
-            # keep listening for a message from `cs` socket
-            msg = cs.recv(1024).decode()
-        except Exception as e:
-            # client no longer connected
-            # remove it from the set
-            print(f"[!] Error: {e}")
-            client_sockets.remove(cs)
-        else:
-            # if we received a message, replace the <SEP> 
-            # token with ": " for nice printing
-            msg = msg.replace(separator_token, ": ")
-        # iterate over all connected sockets
-        for client_socket in client_sockets:
-            # and send the message
-            client_socket.send(msg.encode())
+s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+s.bind((host,port))
 
-while True:
-    # we keep listening for new connections all the time
-    client_socket, client_address = s.accept()
-    print(f"[+] {client_address} connected.")
-    # add the new connected client to connected sockets
-    client_sockets.add(client_socket)
-    # start a new thread that listens for each client's messages
-    t = Thread(target=listen_for_client, args=(client_socket,))
-    # make the thread daemon so it ends whenever the main thread ends
-    t.daemon = True
-    # start the thread
-    t.start()
-    # close client sockets
-    for cs in client_sockets:
-        cs.close()
-    # close server socket
-    s.close()
+quit = False
+print("[ Server Started ]")
+
+while not quit:
+	try:
+		data, addr = s.recvfrom(1024)
+
+		if addr not in clients:
+			clients.append(addr)
+
+		itsatime = time.strftime("%Y-%m-%d-%H.%M.%S", time.localtime())
+
+		print("["+addr[0]+"]=["+str(addr[1])+"]=["+itsatime+"]/",end="")
+		print(data.decode("utf-8"))
+
+		for client in clients:
+			if addr != client:
+				s.sendto(data,client)
+	except:	
+		print("\n[ Server Stopped ]")
+		quit = True
+		
+s.close()
