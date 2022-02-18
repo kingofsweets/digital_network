@@ -7,7 +7,6 @@ port = 9090
 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 s.bind((host,port))
 
-s.listen()
 
 clients = []
 nicknames = []
@@ -33,7 +32,7 @@ def handle_connection(client):
 def main():
     print("SERVER POSHOLLL...")
     while True:
-        client, addr = s.accept()
+        client, addr = s.recvfrom(1024)
         print(f"Connected to {addr}")
         
         client.send("NICK".encode('utf-8'))
