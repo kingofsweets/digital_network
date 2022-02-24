@@ -1,0 +1,68 @@
+<MyRoot>:
+    nickname_text:nickname_text
+    chat_text:chat_text
+    message_text:message_text
+    send_btn:send_btn
+    conn_btn:conn_btn
+    simple:simple
+
+    orientation: 'vertical'
+
+    GridLayout:
+        id: simple
+        rows: 1
+        cols: 2
+        padding: 10
+        spacing: 10
+        height: 125
+        size_hint: (1, None)
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: "NickName"
+                font_size: 42
+
+            TextInput:
+                id: nickname_text
+                size_hint: (1, None)
+                height: 50
+    Button:
+        id: conn_btn
+        text: "connect"
+        size_hint: (1, None)
+        height: 50
+
+        on_press: root.connect_to_server()
+
+    Label:
+        text: "Chat History"
+        font_size: 42
+        height: 50
+
+    TextInput:
+        id: chat_text
+        size_hint: (1, None)
+        height: 450
+        font_size: 36
+        multiline: True
+        readonly: True
+        disabled: True
+    
+    Label:
+        text: "Your message"
+        font_size: 42
+        height: 50
+    
+    TextInput:
+        id: message_text
+        font_size: 36
+    Button:
+        id:send_btn
+        text: "send"
+        font_size: 32
+        size: 100,50
+
+        on_press: root.send_mess()
+        disabled: True
+

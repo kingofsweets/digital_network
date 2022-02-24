@@ -110,7 +110,7 @@ ENV/
 env.bak/
 venv.bak/
 
-GUI
+GUI/__pycache__
 
 # Spyder project settings
 .spyderproject
