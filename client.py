@@ -31,7 +31,7 @@ def receving (name, sock):
 host = socket.gethostbyname(socket.gethostname())
 port = 0
 
-server = ("3.10.223.13",9090)
+server = ("18.132.46.198",9090)
 
 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 s.bind((host,port))

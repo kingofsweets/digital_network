@@ -46,7 +46,7 @@ class MyRoot(BoxLayout):
             host = socket.gethostbyname(socket.gethostname())
             port = 0
 
-            self.server = ("3.10.223.13",9090)
+            self.server = ("18.132.46.198",9090)
 
             self.s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
             self.s.bind((host,port))
